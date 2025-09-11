@@ -126,7 +126,7 @@
     <ClCompile Include="3dGameEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\headers\olcConsoleGameEngine.h" />
+    <ClInclude Include="olcConsoleGameEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
