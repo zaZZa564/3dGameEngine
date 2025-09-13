@@ -31,6 +31,20 @@ private:
 	mesh meshCube;
 	mat4x4 matProj;
 
+	//myltiply matrix by vector
+	void MyltiplyMatrixVector(vec3d& i, vec3d& o, mat4x4& mat) {
+		o.x = i.x * mat.m[0][0] + i.y * mat.m[1][0] + i.z * mat.m[2][0] + mat.m[3][0];
+		o.y = i.x * mat.m[0][1] + i.y * mat.m[1][1] + i.z * mat.m[2][1] + mat.m[3][1];
+		o.y = i.x * mat.m[0][2] + i.y * mat.m[1][2] + i.z * mat.m[2][2] + mat.m[3][2];
+		float w = i.x * mat.m[0][3] + i.y * mat.m[1][3] + i.z * mat.m[2][3] + mat.m[3][3];
+
+		if (w != 0.0f) {
+			o.x /= w;
+			o.y /= w;
+			o.z /= w;
+		}
+	}
+
 public:
 	olcEngine3D() { //constructor
 		//uses 'L' prefix for wchar data type => extended char set
