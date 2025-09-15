@@ -31,6 +31,7 @@ class olcEngine3D : public olcConsoleGameEngine{
 private:
 	mesh meshCube;
 	mat4x4 matProj;
+	float fTheta;
 
 	//myltiply matrix by vector
 	void MultiplyMatrixVector(vec3d &i, vec3d &o, mat4x4 &mat) {
@@ -101,14 +102,44 @@ public:
 	bool OnUserUpdate(float fElapsedTime) override {
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), PIXEL_SOLID, FG_BLACK);
 
+		//rotation matrices
+		mat4x4 matRotZ, matRotX;
+		fTheta += 1.0f * fElapsedTime;
+
+		//rotation Z
+		matRotZ.m[0][0] = cosf(fTheta);
+		matRotZ.m[0][1] = sinf(fTheta);
+		matRotZ.m[1][0] = -sinf(fTheta);
+		matRotZ.m[1][1] = cosf(fTheta);
+		matRotZ.m[2][2] = 1;
+		matRotZ.m[3][3] = 1;
+
+		//rotation X
+		matRotX.m[0][0] = 1;
+		matRotX.m[1][1] = cosf(fTheta * 0.5f);
+		matRotX.m[1][2] = sinf(fTheta * 0.5f);
+		matRotX.m[2][1] = -sinf(fTheta * 0.5f);
+		matRotX.m[2][2] = cosf(fTheta * 0.5f);
+		matRotX.m[3][3] = 1;
+
 		//draw triangles
 		for (auto tri : meshCube.tris) {
-			triangle triProjected, triTranslated;
+			triangle triProjected, triTranslated, triRotatedZ, triRotatedZX;
 
-			triTranslated = tri;
-			triTranslated.p[0].z = tri.p[0].z + 3.0f;
-			triTranslated.p[1].z = tri.p[1].z + 3.0f;
-			triTranslated.p[2].z = tri.p[2].z + 3.0f;
+			//rotating mesh
+			MultiplyMatrixVector(tri.p[0], triRotatedZ.p[0], matRotZ);
+			MultiplyMatrixVector(tri.p[1], triRotatedZ.p[1], matRotZ);
+			MultiplyMatrixVector(tri.p[2], triRotatedZ.p[2], matRotZ);
+
+			MultiplyMatrixVector(triRotatedZ.p[0], triRotatedZX.p[0], matRotX);
+			MultiplyMatrixVector(triRotatedZ.p[1], triRotatedZX.p[1], matRotX);
+			MultiplyMatrixVector(triRotatedZ.p[2], triRotatedZX.p[2], matRotX);
+
+			//translating mesh
+			triTranslated = triRotatedZX;
+			triTranslated.p[0].z = triRotatedZX.p[0].z + 3.0f;
+			triTranslated.p[1].z = triRotatedZX.p[1].z + 3.0f;
+			triTranslated.p[2].z = triRotatedZX.p[2].z + 3.0f;
 
 			MultiplyMatrixVector(triTranslated.p[0], triProjected.p[0], matProj);
 			MultiplyMatrixVector(triTranslated.p[1], triProjected.p[1], matProj);
