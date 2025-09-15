@@ -105,16 +105,14 @@ public:
 		for (auto tri : meshCube.tris) {
 			triangle triProjected, triTranslated;
 
-			/*
 			triTranslated = tri;
 			triTranslated.p[0].z = tri.p[0].z + 3.0f;
 			triTranslated.p[1].z = tri.p[1].z + 3.0f;
 			triTranslated.p[2].z = tri.p[2].z + 3.0f;
-			*/
 
-			MultiplyMatrixVector(tri.p[0], triProjected.p[0], matProj);
-			MultiplyMatrixVector(tri.p[1], triProjected.p[1], matProj);
-			MultiplyMatrixVector(tri.p[2], triProjected.p[2], matProj);
+			MultiplyMatrixVector(triTranslated.p[0], triProjected.p[0], matProj);
+			MultiplyMatrixVector(triTranslated.p[1], triProjected.p[1], matProj);
+			MultiplyMatrixVector(triTranslated.p[2], triProjected.p[2], matProj);
 
 			//scale into view
 			
