@@ -12,16 +12,17 @@ struct vec3d {
 	float x, y, z;
 };
 
-//for triangle (3 points)
+//triangle (3 points)
 struct triangle {
 	vec3d p[3];
 };
 
-//for 3d meshes composed from triangles
+//3d meshes composed from triangles
 struct mesh {
 	vector<triangle> tris;
 };
 
+//4 x 4 matrix
 struct mat4x4 {
 	float m[4][4] = { 0 };
 };
@@ -46,7 +47,8 @@ private:
 	}
 
 public:
-	olcEngine3D() { //constructor
+	//constructor
+	olcEngine3D() {
 		//uses 'L' prefix for wchar data type => extended char set
 		m_sAppName = L"3D engine";
 	}
@@ -102,7 +104,28 @@ public:
 
 		//draw triangles
 		for (auto &tri : meshCube.tris) {
+			triangle triProjected;
+			MyltiplyMatrixVector(tri.p[0], triProjected.p[0], matProj);
+			MyltiplyMatrixVector(tri.p[1], triProjected.p[1], matProj);
+			MyltiplyMatrixVector(tri.p[2], triProjected.p[2], matProj);
 
+			//scale into view
+			triProjected.p[0].x += 1.0f; triProjected.p[0].y += 1.0f;
+			triProjected.p[1].x += 1.0f; triProjected.p[1].y += 1.0f;
+			triProjected.p[2].x += 1.0f; triProjected.p[2].y += 1.0f;
+
+			triProjected.p[0].x *= 0.5f * (float)ScreenWidth();
+			triProjected.p[0].y *= 0.5f * (float)ScreenWidth();
+			triProjected.p[1].x *= 0.5f * (float)ScreenWidth();
+			triProjected.p[1].y *= 0.5f * (float)ScreenWidth();
+			triProjected.p[2].x *= 0.5f * (float)ScreenWidth();
+			triProjected.p[2].y *= 0.5f * (float)ScreenWidth();
+
+			//draw triangles
+			DrawTriangle(triProjected.p[0].x, triProjected.p[0].y,
+				triProjected.p[1].x, triProjected.p[1].y,
+				triProjected.p[2].x, triProjected.p[2].y,
+				PIXEL_SOLID, FG_WHITE);
 		}
 
 		return true;
