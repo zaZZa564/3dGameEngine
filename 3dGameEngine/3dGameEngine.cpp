@@ -31,7 +31,7 @@ class olcEngine3D : public olcConsoleGameEngine{
 private:
 	mesh meshCube;
 	mat4x4 matProj;
-	float fTheta;
+	float fTheta = 0;
 
 	//myltiply matrix by vector
 	void MultiplyMatrixVector(vec3d &i, vec3d &o, mat4x4 &mat) {
@@ -135,11 +135,29 @@ public:
 			MultiplyMatrixVector(triRotatedZ.p[1], triRotatedZX.p[1], matRotX);
 			MultiplyMatrixVector(triRotatedZ.p[2], triRotatedZX.p[2], matRotX);
 
-			//translating mesh
+			//translating mesh, offset into screen
 			triTranslated = triRotatedZX;
 			triTranslated.p[0].z = triRotatedZX.p[0].z + 3.0f;
 			triTranslated.p[1].z = triRotatedZX.p[1].z + 3.0f;
 			triTranslated.p[2].z = triRotatedZX.p[2].z + 3.0f;
+
+			//calculating normal vector
+			vec3d line1, line2, normal;
+			line1.x = triTranslated.p[1].x - triTranslated.p[0].x;
+			line1.y = triTranslated.p[1].y - triTranslated.p[0].y;
+			line1.z = triTranslated.p[1].z - triTranslated.p[0].z;
+
+			line2.x = triTranslated.p[2].x - triTranslated.p[0].x;
+			line2.y = triTranslated.p[2].y - triTranslated.p[0].y;
+			line2.z = triTranslated.p[2].z - triTranslated.p[0].z;
+
+			normal.x = line1.y * line2.z - line1.z * line2.y;
+			normal.y = line1.z * line2.x - line1.x * line2.z;
+			normal.z = line1.x * line2.y - line1.y * line2.x;
+
+			//normalizing normal vector
+			float l = sqrtf(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+			normal.x /= l; normal.y /= l; normal.z /= l;
 
 			MultiplyMatrixVector(triTranslated.p[0], triProjected.p[0], matProj);
 			MultiplyMatrixVector(triTranslated.p[1], triProjected.p[1], matProj);
@@ -175,6 +193,5 @@ int main() {
 	if (demo.ConstructConsole(256, 240, 4, 4)) {
 		demo.Start();
 	}
-
 	return 0;
 }
